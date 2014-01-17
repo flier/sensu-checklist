@@ -7,18 +7,23 @@ __author__ = 'Flier Lu <flier.lu@gmail.com>'
 
 from setuptools import setup, find_packages
 
+from sensu_checklist import __name__ as package_name, __version__ as package_version
+
 setup(
-    name="sensu-checklist",
-    version="0.8",
+    name=package_name,
+    version=package_version,
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'sensu-checklist = sensu.checklist:run'
+            'sensu-checklist = %s.main:run' % package_name
         ]
     },
-    test_suite='sensu.tests',
+    test_suite='%s.tests' % package_name,
 
-    install_requires=[],
+    install_requires=[
+        'pyyaml >= 3.10',
+        'colorama >= 0.2.7',
+    ],
 
     author="Flier Lu",
     author_email="flier.lu@gmail.com",
