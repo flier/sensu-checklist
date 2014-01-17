@@ -1,5 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import os
+import platform
 
 __author__ = 'flier'
 
@@ -9,10 +11,24 @@ class Output(object):
 
 
 class ConsoleOutput(Output):
+    pass
+
+
+class ColorConsoleOutput(ConsoleOutput):
+    TERM_WITH_COLORS = ['xterm', 'xterm-color', 'xterm-256color', 'linux', 'screen', 'screen-256color', 'screen-bce']
+
     def __init__(self):
         from colorama import init
 
-        init()
+        init(wrap=ColorConsoleOutput.is_windows())
+
+    @staticmethod
+    def is_windows():
+        return platform.system() == 'Windows'
+
+    @staticmethod
+    def term_with_colors():
+        return ColorConsoleOutput.is_windows() or os.environ.get('TERM') in ColorConsoleOutput.TERM_WITH_COLORS
 
 
 class XmlOutput(Output):
@@ -28,7 +44,7 @@ class YamlOutput(Output):
 
 
 SUPPORT_OUTPUTS = {
-    'console': ConsoleOutput,
+    'console': ColorConsoleOutput if ColorConsoleOutput.term_with_colors() else ConsoleOutput,
     'xml': XmlOutput,
     'json': JsonOutput,
     'yaml': YamlOutput,
