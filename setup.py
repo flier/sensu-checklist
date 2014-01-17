@@ -16,6 +16,7 @@ setup(
             'sensu-checklist = sensu.checklist:run'
         ]
     },
+    test_suite='sensu.tests',
 
     install_requires=[],
 
