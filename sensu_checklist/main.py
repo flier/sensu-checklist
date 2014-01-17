@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from sensu_checklist import __name__ as package_name
 from sensu_checklist.parser import parse_checklist
 from sensu_checklist.output import SUPPORT_OUTPUTS
 from sensu_checklist.collector import Collector
@@ -13,7 +14,7 @@ __author__ = 'flier'
 def parse_cmdline():
     from argparse import ArgumentParser, FileType
 
-    parser = ArgumentParser()
+    parser = ArgumentParser(prog=package_name)
 
     parser.add_argument('checklist', metavar='FILE', type=FileType('r'), nargs='+',
                         help='checklist files')

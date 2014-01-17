@@ -1,7 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import logging
 
 __author__ = 'flier'
+
+log = logging.getLogger('checklist')
 
 
 class Check(object):

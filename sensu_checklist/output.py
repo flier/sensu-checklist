@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 import os
 import platform
+import logging
 
 __author__ = 'flier'
+
+log = logging.getLogger('output')
 
 
 class Output(object):
