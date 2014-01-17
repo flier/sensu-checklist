@@ -13,6 +13,10 @@ setup(
     name=package_name,
     version=package_version,
     packages=find_packages(),
+    package_data={
+
+    },
+    include_package_data=True,
     entry_points={
         'console_scripts': [
             'sensu-checklist = %s.main:run' % package_name
@@ -23,6 +27,7 @@ setup(
     install_requires=[
         'pyyaml >= 3.10',
         'colorama >= 0.2.7',
+        'jinja2 >= 2.7.2',
     ],
 
     author="Flier Lu",
