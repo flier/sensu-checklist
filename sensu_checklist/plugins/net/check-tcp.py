@@ -31,7 +31,7 @@ class ConnectCheck(SensuPluginCheck):
         self.parser.add_argument(
             '-m',
             '--message',
-            default='Connect to TCP %s:%d',
+            default='Connect to tcp://%s:%d',
             type=str,
             help='Message to print'
         )
