@@ -28,6 +28,7 @@ setup(
         'pyyaml >= 3.10',
         'colorama >= 0.2.7',
         'jinja2 >= 2.7.2',
+        'sensu_plugin >= 0.1.0'
     ],
 
     author="Flier Lu",
