@@ -1,36 +1,35 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import re
-import socket
 
-import telnetlib
+from kazoo.client import KazooClient
 
 from sensu_plugin import SensuPluginCheck
 
 __author__ = 'flier'
 
 
-class TelnetCheck(SensuPluginCheck):
+class ZookeeperCheck(SensuPluginCheck):
     def setup(self):
         self.parser.add_argument(
             '--host',
             default='localhost',
             type=str,
-            help='Host or IP to check'
+            help='Host or IP to connect'
         )
         self.parser.add_argument(
             '-p',
             '--port',
-            default=telnetlib.TELNET_PORT,
+            default=2181,
             type=int,
-            help='Port to check'
+            help='Port to connect'
         )
         self.parser.add_argument(
-            '-c',
-            '--command',
+            '-f',
+            '--file',
             required=True,
             type=str,
-            help='Command to sending'
+            help='File to check'
         )
         self.parser.add_argument(
             '-r',
@@ -42,30 +41,30 @@ class TelnetCheck(SensuPluginCheck):
         self.parser.add_argument(
             '-m',
             '--message',
-            default='Connect to telnet://{host}:{port}; regex /{regex}/',
+            default='Connect to zookeeper://{host}:{port}{file}; regex /{regex}/',
             type=str,
             help='Message to print'
         )
 
     def run(self):
-        telnet = telnetlib.Telnet()
+        zk = KazooClient(hosts='%s:%d' % (self.options.host, self.options.port),
+                         read_only=True, timeout=3)
 
         try:
-            #telnet.set_debuglevel(3)
-            telnet.open(self.options.host, self.options.port)
+            zk.start()
 
-            telnet.write(self.options.command.decode('string_escape'))
+            content, stats = zk.get(self.options.file)
 
-            m = re.findall(self.options.regex, telnet.read_all(), re.MULTILINE | re.DOTALL)
+            m = re.findall(self.options.regex, content, re.MULTILINE | re.DOTALL)
 
             if m:
                 self.ok(self.options.message.format(**vars(self.options)))
             else:
                 self.critical(self.options.message.format(**vars(self.options)))
-        except socket.error as ex:
+        except Exception as ex:
             self.critical(ex)
         finally:
-            telnet.close()
+            zk.stop()
 
 if __name__ == "__main__":
-    TelnetCheck()
+    ZookeeperCheck()

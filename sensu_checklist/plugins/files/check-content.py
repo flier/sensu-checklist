@@ -26,19 +26,23 @@ class ContentCheck(SensuPluginCheck):
         self.parser.add_argument(
             '-m',
             '--message',
-            default='Found %d matching patterns; regex /%s/',
+            default='Found file {file} matched patterns; regex /{regex}/',
             type=str,
             help='Message to print'
         )
 
     def run(self):
         with open(self.options.file, 'r') as f:
-            m = re.findall(self.options.regex, f.read(), re.MULTILINE | re.DOTALL)
+            m = re.match(self.options.regex, f.read(), re.MULTILINE | re.DOTALL)
+
+            options = vars(self.options)
 
             if m:
-                self.ok(self.options.message % (len(m), self.options.regex))
+                options.update(m.groupdict())
+
+                self.ok(self.options.message.format(**options))
             else:
-                self.critical(self.options.message % (0, self.options.regex))
+                self.critical(self.options.message.format(**options))
 
 if __name__ == "__main__":
     ContentCheck()

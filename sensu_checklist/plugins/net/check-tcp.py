@@ -31,7 +31,7 @@ class ConnectCheck(SensuPluginCheck):
         self.parser.add_argument(
             '-m',
             '--message',
-            default='Connect to tcp://%s:%d',
+            default='Connect to tcp://{host}:{port}',
             type=str,
             help='Message to print'
         )
@@ -41,9 +41,9 @@ class ConnectCheck(SensuPluginCheck):
         try:
             sock.connect((self.options.host, self.options.port))
 
-            self.ok(self.options.message % (self.options.host, self.options.port))
-        except socket.error:
-            self.critical(self.options.message % (self.options.host, self.options.port))
+            self.ok(self.options.message.format(**vars(self.options)))
+        except socket.error as ex:
+            self.critical(ex)
         finally:
             sock.close()
 
