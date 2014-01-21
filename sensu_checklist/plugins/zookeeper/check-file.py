@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import re
+import socket
 
 from kazoo.client import KazooClient
 
@@ -34,7 +35,6 @@ class ZookeeperCheck(SensuPluginCheck):
         self.parser.add_argument(
             '-r',
             '--regex',
-            required=True,
             type=str,
             help='Regex to matching'
         )
@@ -53,14 +53,28 @@ class ZookeeperCheck(SensuPluginCheck):
         try:
             zk.start()
 
-            content, stats = zk.get(self.options.file)
+            options = vars(self.options)
+            options.update({
+                'system.hostname': socket.gethostname()
+            })
 
-            m = re.findall(self.options.regex, content, re.MULTILINE | re.DOTALL)
+            if self.options.regex:
+                content, stats = zk.get(self.options.file)
 
-            if m:
-                self.ok(self.options.message.format(**vars(self.options)))
+                options['stats'] = stats
+
+                m = re.search(self.options.regex, content, re.MULTILINE | re.DOTALL)
+
+                if m:
+                    options.update(m.groupdict())
+
+                    self.ok(self.options.message.format(**options))
+                else:
+                    self.critical(self.options.message.format(**options))
+            elif zk.exists(self.options.file):
+                self.ok(self.options.message.format(**options))
             else:
-                self.critical(self.options.message.format(**vars(self.options)))
+                self.critical(self.options.message.format(**options))
         except Exception as ex:
             self.critical(ex)
         finally:

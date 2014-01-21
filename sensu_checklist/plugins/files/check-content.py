@@ -33,7 +33,7 @@ class ContentCheck(SensuPluginCheck):
 
     def run(self):
         with open(self.options.file, 'r') as f:
-            m = re.match(self.options.regex, f.read(), re.MULTILINE | re.DOTALL)
+            m = re.search(self.options.regex, f.read(), re.MULTILINE | re.DOTALL)
 
             options = vars(self.options)
 

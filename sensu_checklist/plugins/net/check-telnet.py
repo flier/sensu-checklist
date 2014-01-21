@@ -56,7 +56,7 @@ class TelnetCheck(SensuPluginCheck):
 
             telnet.write(self.options.command.decode('string_escape'))
 
-            m = re.findall(self.options.regex, telnet.read_all(), re.MULTILINE | re.DOTALL)
+            m = re.search(self.options.regex, telnet.read_all(), re.MULTILINE | re.DOTALL)
 
             if m:
                 self.ok(self.options.message.format(**vars(self.options)))
